@@ -134,7 +134,7 @@ class App(object):
             self.lb.config(text="您没有选择任何文件")
 
     def change_default(self):
-        write = _Write('/Users/ybbrichard/PycharmProjects/5.9/main/init.conf')
+        write = _Write("C:\\Users\\Summer\\PycharmProjects\\6.30\\main\\init.conf")
         self.target_url.delete(0, END)
         self.target_url.insert(0, 'https://www.dji.com/cn')
         write.set_url('https://www.dji.com/cn')
@@ -168,7 +168,7 @@ class App(object):
         del write
 
     def change_config(self):
-        write = _Write('/Users/ybbrichard/PycharmProjects/5.9/main/init.conf')
+        write = _Write("C:\\Users\\Summer\\PycharmProjects\\6.30\\main\\init.conf")
         write.set_url(self.target_url.get())
         write.set_host(self.host.get())
         write.set_username(self.username.get())
