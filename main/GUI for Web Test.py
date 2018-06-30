@@ -3,7 +3,6 @@
 from tkinter import *
 import tkinter.filedialog
 from main.readConfig import _Write
-from main.ma import *
 
 
 class App(object):
