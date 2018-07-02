@@ -3,13 +3,22 @@
 from tkinter import *
 import tkinter.filedialog
 from main.readConfig import _Write
+import time
 
 
 class App(object):
+    msec = 50
+
     def __init__(self):
         self.driver_path = None
         self.browser = None
         self.root = Tk()
+        self._start = 0.0
+        self._elapsedtime = 0.0
+        self._running = False
+        self.timestr = StringVar()
+        self.makeWidgets()
+
         self.root.title('Web自动化测试系统')
         # self.root.geometry('800x400')
         # self.title = Label(self.root, text="Web自动化测试系统", font=('Arial', 18), width=30, height=2).grid(row=0)
@@ -93,12 +102,13 @@ class App(object):
 
         Label(self.create, text="生成用例", font=('Arial', 15)).grid(row=0, column=0, columnspan=1)
 
-        Button(self.create, text="Run", command=self.run, width=8, font=('Verdana', 15)).grid(row=0, column=1)
-        Button(self.create, text="Stop", command=self.stop, width=8, font=('Verdana', 15)).grid(row=0, column=2)
+        Button(self.create, text="Run", command=self.Restart, width=8, font=('Verdana', 15)).grid(row=0, column=1)
+        Button(self.create, text="Stop", command=self.Stop, width=8, font=('Verdana', 15)).grid(row=0, column=2)
 
         Label(self.create, text='测试用时', font=('Arial', 15)).grid(row=1, column=0, columnspan=1)
-        self.use_time = Text(Frame(self.create))
-        self.use_time.grid(row=1, column=1, columnspan=1)
+        self.l = Label(self.create, textvariable=self.timestr)
+        self._setTime(self._elapsedtime)
+        self.l.grid(row=1, column=1, columnspan=1)
 
         Label(self.create, text='生成测试用例数', font=('Arial', 15)).grid(row=2, column=0, columnspan=1)
         self.case_num = Text(Frame(self.create))
@@ -106,9 +116,9 @@ class App(object):
 
         Label(self.create, text="测试用例树状图", font=('Arial', 15)).grid(row=3, column=0, columnspan=1)
 
-        Button(self.create, text="Report", command=self.run, width=8, font=('Verdana', 15)).grid(row=3, column=1,
+        Button(self.create, text="Report", command=self.Report, width=8, font=('Verdana', 15)).grid(row=3, column=1,
                                                                                                  columnspan=1)
-        Button(self.create, text="Quit", command=self.stop, width=8, font=('Verdana', 15)).grid(row=3, column=2,
+        Button(self.create, text="Quit", command=self.Quit, width=8, font=('Verdana', 15)).grid(row=3, column=2,
                                                                                                 columnspan=1)
 
         self.create.grid(row=0, column=4, columnspan=1, rowspan=3)
@@ -178,12 +188,52 @@ class App(object):
         write.set_timeout(self.timeout.get())
         del write
 
-    def run(self):
+    def Report(self):
         pass
 
-    def stop(self):
+    def Quit(self):
         pass
 
+    def makeWidgets(self):
+        '''制作时间标签'''
+        self._setTime(self._elapsedtime)
+
+    def _update(self):
+        self._elapsedtime = time.time() - self._start
+        self._setTime(self._elapsedtime)
+        self._timer = self.create.after(self.msec, self._update)
+
+    def _setTime(self, elap):
+        '''将时间格式改为 分：秒：百分秒'''
+        hours = int(elap/3600)
+        minutes = int(elap/60)
+        seconds = int(elap-minutes*60.0)
+        hseconds = int((elap - minutes*60.0 - seconds) *100)
+        self.timestr.set('%2d:%2d:%2d:%2d' %(hours, minutes, seconds, hseconds))
+
+    def Restart(self):
+        self.Reset()
+        self.Start()
+
+    def Start(self):
+        if not self._running:
+            self._start = time.time() - self._elapsedtime
+            self._update()
+            self._running = True
+
+    def Stop(self):
+        '''停止秒表'''
+        if self._running:
+            self.create.after_cancel(self._timer)
+            self._elapsedtime = time.time() - self._start
+            self._setTime(self._elapsedtime)
+            self._running = False
+
+    def Reset(self):
+        '''重设秒表'''
+        self._start = time.time()
+        self._elapsedtime = 0.0
+        self._setTime(self._elapsedtime)
 
 App()
 
