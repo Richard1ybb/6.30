@@ -4,6 +4,7 @@ from tkinter import *
 import tkinter.filedialog
 from main.readConfig import _Write
 import time
+from main.ma import *
 
 
 class App(object):
@@ -214,6 +215,8 @@ class App(object):
     def Restart(self):
         self.Reset()
         self.Start()
+        star = Main()
+        star.produce_test_case(length=3)
 
     def Start(self):
         if not self._running:
